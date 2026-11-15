@@ -176,6 +176,34 @@
                 font-size: 20px;
                 line-height: 1.8;
             }
+            #howto-screen{
+                background-color: #fff1d6;
+                border: 4px solid #d99545;
+                max-width: 500px;
+                margin: 60px auto;
+                padding: 35px 20px;
+                color: #60452f;
+                box-shadow: 6px 6px 0px #d99545;
+                }
+
+                #howto-screen h2{
+                color: #e88b35;
+                font-size: 32px;
+                text-shadow: 2px 2px #f8cf8b;
+                }
+
+                .howto-box{
+                background-color: #fff8e8;
+                border: 3px solid #d99545;
+                padding: 15px;
+                margin: 20px auto;
+                max-width: 400px;
+                }
+
+                .howto-box h3{
+                color: #bd7130;
+                margin-top: 20px;
+            }
         </style>
     </head>
     <body>
@@ -183,6 +211,34 @@
             <h1>Goo DEN-TAKU</h1>
             <p>数字をくわせてハイスコアをめざせ！</p>   
             <button id = "start-button">ゲームスタート</button>
+            <button id = "howto-button">遊び方</button>
+        </div>
+        <div id = "howto-screen" style = "display:none">
+            <h2>遊び方</h2>
+            <p>満腹値に現在値を近づけて<br>ハイスコアを目指そう!</p>
+
+            <div class = "howto-box">
+                <h3>①数字を食べさせよう!</h3>
+                <p>+、-、×、÷を選んで<br>現在値を変えよう!</p>
+
+                <h3>②ご馳走様!</h3>
+                <p>満腹値との差が10以内になると<br>「ご馳走様!」が使えるぞ!</p>
+
+                <h3>③スコア</h3>
+                <p>
+                    ピッタリ(Goo DEN-TAKU!):10000点<br>
+                    差1~5(Goo DEN!):5000点<br>
+                    差6~10(Goo!):1000点
+                </p>
+
+                <h3>④ゲームオーバー</h3>
+                <p>
+                    現在値が99を超える<br>
+                    または残りターンが0になると終了!
+                </p>
+            </div>
+            <button id = "back-button">戻る</button>
+
         </div>
       
         <div id="game-screen" style = "display: none;">
@@ -220,6 +276,9 @@
             const startbutton = document.getElementById("start-button");
             const titlescreen = document.getElementById("title-screen");
             const gamescreen = document.getElementById("game-screen");
+            const howtobutton = document.getElementById("howto-button");
+            const howtoscreen = document.getElementById("howto-screen");
+            const backbutton = document.getElementById("back-button");
             const eatNumbertext = document.getElementById("eat-number");            
             const targettext = document.getElementById("target");
             const currenttext = document.getElementById("current");
@@ -539,7 +598,21 @@
                     }
                 }
             }
-            
+            //遊び方//
+            howtobutton.addEventListener("click", function(){
+                buttonSound.play();
+
+                titlescreen.style.display = "none";
+                howtoscreen.style.display = "block";
+            });
+
+            //戻る//
+            backbutton.addEventListener("click", function(){
+                buttonSound.play();
+
+                howtoscreen.style.display ="none";
+                titlescreen.style.display = "block";
+            });
             //ゲームスタート//
             startbutton.addEventListener("click", function(){
                 buttonSound.play();
