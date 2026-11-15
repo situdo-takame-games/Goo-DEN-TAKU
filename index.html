@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset = "UTF-8">
+        <title>Goo DEN-TAKU</title>
+
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+           #title-screen{
+            background-color: #fff1d6;
+            border:4px solid #d99545;
+            max-width: 500px;
+            margin: 60px auto;
+            padding: 35px 20px;
+            color: #60452f;
+            box-shadow: 6px 6px 0px #d99545;
+           }
+           #title-screen h1{
+            color:#e88b35;
+            font-size: 38px;
+            text-shadow: 2px 2px #f8cf8b;
+            letter-spacing: 3px;
+           }
+           #game-screen{
+                background-color: #fff8e8;
+                border: 4px solid #d99545;
+                max-width: 600px;
+                margin: 30px auto;
+                padding: 25px;
+                color: #60452f;
+                box-shadow: 5px 5px #d99545;
+           }
+           #game-screen h2{
+            color: #e88b35;
+            font-size: 28px;
+            text-shadow: 2px 2px #f8cf8b;
+           }
+           #eat-number {
+                background-color: #ffe0a8;
+                border: 4px solid #e89a42;
+                padding: 20px;
+                margin: 25px auto;
+                max-width: 350px;
+                font-size: 30px;
+                font-weight: bold;
+                color: #bd7130;
+                box-shadow: 5px 5px 0px #d99545;
+            }
+           button{
+                background-color: #f5a04b;
+                color: #fffaf0;
+                border: 3px solid #bd7130;
+                padding: 10px 18px;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                box-shadow: 3px 3px 0px #bd7130;
+            }
+            button:hover{
+                background-color: #ffc477;
+            }
+            #finish-button:disabled{
+                background-color: #c9a47e;
+                border-color: #a98560;
+                color: #eee0ce;
+                box-shadow: none;
+                cursor: not-allowed;
+            }
+            #finish-button:not(:disabled){
+                background-color: #ffad4f;
+                border-color: #bd7130;
+                color: #fffaf0;
+                box-shadow: 3px 3px 0px #bd7130;
+            }
+            button:active{
+                transform: translate(2px, 2px);
+                box-shadow: 1px 1px 0px #bd7130;
+            }
+            body {
+                font-family: "DotGothic16", sans-serif;
+                text-align: center;
+                background-color: #fff4dc;
+                color: #60452f;
+            }
+            .number-status{
+                background-color: #fff1d6;
+                border:3px solid #d99545;
+                padding: 10px;
+                margin: 10px auto;
+                max-width: 300px;
+                font-size: 20px;
+                box-shadow: 3px 3px 0px #d99545;
+            }
+            #plus-button,
+            #minus-button,
+            #multiply-button,
+            #divide-button{
+                width: 60px;
+                height: 60px;
+                margin: 5px;
+                font-size: 28px;
+            }
+            #plus-button{
+                background-color: #f5a04b;
+            }
+            #minus-button{
+                background-color: #e8a35d;
+            }
+            #multiply-button{
+                background-color: #f08b5b;
+            }
+            #divide-button{
+                background-color: #d99545;
+            }
+            .operation-buttons{
+                display:grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                max-width: 250px;
+                margin: 20px auto;
+            }
+            .operation-buttons button{
+                width: 100%;
+            }
+            .game-status{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                max-width: 500px;
+                margin: 10px auto;
+            }
+            .number-area{
+            display: flex;
+            justify-content:  center;
+            gap: 15px;
+            }
+            #character{
+                width: 180px;
+                height: auto;
+                animation: purupuru 0.5s infinite;
+                image-rendering: pixelated;
+            }
+
+            @keyframes purupuru{
+                0%{
+                    transform: translateX(0);
+                }
+                25%{
+                    transform: translateX(3px);
+                }
+                50%{
+                    transform: translateX(3px);
+                }
+
+                75%{
+                    transform: translateX(-3px);
+                }
+
+                100%{
+                    transform: translateX(0);
+                }
+            }
+            #message-window{
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 300px;
+                padding: 25px;
+                background-color: #fff1d6;
+                border: 4px solid #d99545;
+                box-shadow: 6px 6px 0px #bd7138;
+                z-index: 10;
+            }
+            #message-text{
+                font-size: 20px;
+                line-height: 1.8;
+            }
+        </style>
+    </head>
+    <body>
+        <div id ="title-screen">
+            <h1>Goo DEN-TAKU</h1>
+            <p>数字をくわせてハイスコアをめざせ！</p>   
+            <button id = "start-button">ゲームスタート</button>
+        </div>
+      
+        <div id="game-screen" style = "display: none;">
+            <h2>ゲーム画面</h2>
+            <img id="character" src="character-normal.png" alt="GDTの電卓キャラクター">
+            <div class = "game-status">
+                <p id ="machine">1台目</p>
+                <p id = "turn">残りターン:25</p>
+            </div>
+            <div class ="number-area">
+                <p id = "target" class ="number-status">満腹値:??</p>
+                <p id = "current" class="number-status">現在値:??</p>
+            </div>
+            <p id = "eat-number">食べさせる数字:?</p>
+            <p id = "virus-turn">ウイル数感染:なし</p>
+            <p id = "virus-effect"></p>
+            <p>どの方法で食べさせる？</p>
+            <div class="operation-buttons">
+                <button id = "plus-button">+</button>
+                <button id = "minus-button">-</button>
+                <button id = "multiply-button">×</button>
+                <button id = "divide-button">÷</button>
+            </div>
+            <button id ="finish-button">ご馳走様！</button>
+            <button id ="retry-button" style = "display:none;">もう一回遊ぶ!</button>
+            <p id  = "score">スコア:0</p>
+            <p id = "high-score">ハイスコア:0</p>
+            <div id="message-window" style = "display: none;">
+                <p id ="message-text"></p>
+                <button id = "message-button">OK!</button>
+            </div>
+        </div>
+        <script>
+            //HTMLの要素//
+            const startbutton = document.getElementById("start-button");
+            const titlescreen = document.getElementById("title-screen");
+            const gamescreen = document.getElementById("game-screen");
+            const eatNumbertext = document.getElementById("eat-number");            
+            const targettext = document.getElementById("target");
+            const currenttext = document.getElementById("current");
+            const plusbutton = document.getElementById("plus-button");
+            const minusbutton = document.getElementById("minus-button");
+            const multiplybutton = document.getElementById("multiply-button");
+            const dividebutton = document.getElementById("divide-button");
+            const finishbutton = document.getElementById("finish-button");
+            const scoretext = document.getElementById("score");
+            const highscoretext = document.getElementById("high-score");
+            const turntext = document.getElementById("turn");
+            const machinetext = document.getElementById("machine");
+            const retrybutton = document.getElementById("retry-button");
+            const virusturntext = document.getElementById("virus-turn");
+            const character = document.getElementById("character");
+            const messagewindow = document.getElementById("message-window");
+            const messagetext = document.getElementById("message-text");
+            const messagebutton = document.getElementById("message-button");
+            const viruseffecttext = document.getElementById("virus-effect");
+            const normalSound = new Audio("Goo.m4a");
+            const goodSound = new Audio("Goo_DEN.m4a");
+            const justSound = new Audio("Goo_DEN-TAKU.m4a");
+            const buttonSound = new Audio("choice.mp3");
+            const titleBGM = new Audio("GDT_BGM.m4a");
+            const virusSound = new Audio("virus.mp3");
+            const GameoverSound = new Audio("GDT_GO.m4a");
+            buttonSound.volume = 0.03;
+            normalSound.volume = 0.7;
+            goodSound.volume = 0.7;
+            justSound.volume = 0.7;
+            titleBGM.volume = 0.3;
+            titleBGM.loop = true;
+            virusSound.volume = 0.2;
+            GameoverSound.volume = 0.8;
+            
+            //キャラクター関係//
+            let joyTimer;
+            let isJoy = false;
+            let eatTimer;
+            let isEating = false;          
+            let isJust = false;
+            let justTimer;
+            //ゲームの数字//
+            let target = 0; //満腹値//
+            let current = 0;//現在値//
+            let eatNumber = 0;//食べさせる数字//
+            //スコア、ターン//
+            let score = 0;//スコア//
+            let highscore = localStorage.getItem("highscore")|| 0;//ハイスコア更新//
+            let max_turn = 25;//限界ターン数//
+            let turn = 25;//消費ターン//
+            //電卓の台数//
+            let machineCount = 1;
+            //ウイルス//
+            let infected = false;//感染判定//
+            let infectionRate = 0;//感染確率//
+            let virusTurns = 0;//感染残りターン//
+            //ゲームオーバ判定//
+            let gameOver = false;
+            //次の電卓に移行するか判定//
+            let nextmachine = false;
+
+            //ボタンの状態を更新する//
+            function updateButtons(){
+
+              //メッセージ表示中、またはゲームオーバーなら操作不能//  
+            if(messagewindow.style.display === "block" || gameOver){
+                plusbutton.disabled = true;
+                minusbutton.disabled = true;
+                multiplybutton.disabled = true;
+                dividebutton.disabled = true;
+                finishbutton.disabled = true;
+                return;
+            }
+
+            //通常時は計算ボタンを有効にする//
+            plusbutton.disabled = false;
+            minusbutton.disabled = false;
+            multiplybutton.disabled = false;
+            dividebutton.disabled = false;
+            finishbutton.disabled = false;
+
+            //満腹値との差が10以内ならご馳走様を有効にする//
+            let difference = Math.abs(current - target);
+            finishbutton.disabled = difference > 10;
+            }
+            //メッセージウィンドウを表示する//
+            function showMessage(message){
+
+                //メッセージの内容を表示//
+                messagetext.innerHTML = message;
+
+                //メッセージウィンドウを表示//
+                messagewindow.style.display = "block";
+
+                //ボタンの状態を更新する//
+                updateButtons();
+            }
+            //OKボタンを押したとき//
+            messagebutton.addEventListener("click", function(){
+                buttonSound.play();
+                //メッセージウィンドウを閉じる//
+                messagewindow.style.display = "none";
+                
+                //ボタンの状態を更新する//
+                updateButtons();
+
+                //次の電卓に進む場合//
+                if(nextmachine){
+                    turn = max_turn;
+                    machineCount++;
+                    infected = false;
+                    virusTurns = 0;
+
+                    nextmachine = false;
+
+                    //新しい電卓を作る//
+                    newchalculator();
+                    updategame();
+                }
+            });
+
+            function showCharacterjoy(){
+                clearTimeout(joyTimer);
+                isJoy = true;
+                updateCharacter();
+                joyTimer = setTimeout(function(){
+                    isJoy = false;
+                    updateCharacter();
+                }, 1000);
+            }
+
+            function showCharacterEating(){
+                clearTimeout(eatTimer);
+
+                isEating = true;
+                updateCharacter();
+
+                eatTimer = setTimeout(function(){
+                    isEating = false;
+                    updateCharacter();
+                }, 400);
+            }
+            function showCharacterJust(){
+                clearTimeout(justTimer);
+                clearTimeout(joyTimer);
+
+                isJoy = false;
+                isJust = true;
+
+                updateCharacter();
+
+                justTimer = setTimeout(function(){
+                    isJust = false;
+                    updateCharacter();
+                }, 1500);
+            }
+
+            function updateCharacter(){
+                if(gameOver){
+                    character.src = "gameover.png";
+                }
+                else if(isJust){
+                    character.src = "character-Just.png";
+                }
+                else if(isJoy){
+                    character.src = "character-joy.png";
+                }
+                else if(isEating){
+                    character.src = "character-eat.png";
+                }
+                else if(infected){
+                    character.src = "character-virus.png";
+                }
+                else{
+                    character.src = "character-normal.png";
+                }
+            }
+
+            
+            function updategame(){
+                if(current < 0){
+                    current = 0;
+                }
+            
+
+                if(current > 99 || turn === 0){
+                    titleBGM.pause();
+                    titleBGM.currentTime = 0;
+                    GameoverSound.play();
+                    gameOver = true;
+                    if(score > highscore){
+                        highscore = score;
+                        localStorage.setItem("highscore",highscore);
+                        highscoretext.textContent = "ハイスコア:"+highscore;
+                    }
+                    
+                    if(current > 99){
+                        showMessage("お腹いっぱいになってしまった...<br>ゲームオーバー!!<br>満腹値:"+ target + "<br>現在値:" + current +"<br>最終スコア" + score);
+                    }
+                    else{
+                        showMessage("ターン切れ!!<br>ゲームオーバー!!<br>満腹値:"+ target  + "<br>現在値:"+ current +"<br>最終スコア" + score);
+                    }
+                    retrybutton.style.display = "inline";
+                    updateCharacter();
+                    return;
+                }
+                
+                updateButtons();
+                
+                currenttext.textContent = "現在値:"+ current;
+                eatNumber = Math.floor(Math.random()*9)+1;
+                eatNumbertext.textContent = "食べさせる数字:"+eatNumber;
+                scoretext.textContent = "スコア:" + score;
+                turntext.textContent = "残りターン:" + turn;
+                highscoretext.textContent = "ハイスコア:" + highscore;
+                if(infected){
+                    virusturntext.textContent = "ウイル数感染中!残り:"+virusTurns+"ターン";
+                }
+                else{
+                    virusturntext.textContent = "ウイルス数感染:なし";
+                    viruseffecttext.textContent = "";
+                }
+                updateCharacter();
+            }
+            function retryGame(){
+                score = 0;
+                gameOver = false;
+                max_turn = 25;
+                turn = 25;
+                machineCount = 1;
+                infected = false;
+                virusTurns = 0;
+
+                retrybutton.style.display = "none";
+
+                newchalculator();
+                updategame();
+            }
+            function newchalculator(){
+                target = Math.floor(Math.random()*100);
+                current = Math.floor(Math.random()*100);
+                while(target === current){
+                    current = Math.floor(Math.random()*100);
+                }
+                machinetext.textContent = machineCount + "台目";
+                updateInfectionRate();
+                checkInfection();
+            }
+            function checkInfection(){
+                if(machineCount >= 3 && !infected){
+                    if(Math.random()*100 < infectionRate){
+                        virusSound.play();
+                        infected = true;
+                        virusTurns = 3;
+                        showMessage("ウイル数に感染した!");
+                    }
+                }
+            }
+            function applyVirus(){
+                let actualNumber = eatNumber;
+
+                if(infected){
+                    let virusEffect = Math.floor(Math.random()*7) - 3;
+                    actualNumber += virusEffect;
+
+                    viruseffecttext.textContent =
+                        "ウイル数の影響!" + 
+                        eatNumber + "→" + actualNumber;
+                }
+                return actualNumber;
+            }
+            function afterFeed(){
+                showCharacterEating();
+
+                turn--;
+                if(infected){
+                    virusTurns--;
+                    if(virusTurns === 0){
+                        infected = false;
+                        updateCharacter();
+                    }
+                }
+                updategame();
+            }
+            function feedNumber(operation){
+                let actualNumber = applyVirus();
+
+                if(operation === "plus"){
+                    current += actualNumber;
+                }
+                else if(operation === "minus"){
+                    current -= actualNumber;
+                }
+                else if(operation === "multiply"){
+                    current *= actualNumber;
+                }
+                else if(operation === "divide"){
+                        if(actualNumber === 0){
+                            showMessage("ウイル数の影響で<br>割り算できない!!");
+                            return;
+                        }
+                    else{
+                        current = Math.trunc(current/actualNumber);
+                    }
+                }
+                afterFeed();
+            }
+            function updateInfectionRate(){
+                if(machineCount < 3){
+                    infectionRate = 0;
+                }
+                else{
+                    infectionRate = 3 + (machineCount - 3) * 2;
+                    if(infectionRate > 20){
+                        infectionRate = 20;
+                    }
+                }
+            }
+            
+            //ゲームスタート//
+            startbutton.addEventListener("click", function(){
+                buttonSound.play();
+                titleBGM.play();
+                titlescreen.style.display = "none";
+                gamescreen.style.display ="block";
+                
+                newchalculator();
+                updategame();
+            });
+                //足し算//
+                plusbutton.addEventListener("click", function(){
+                    buttonSound.currentTime = 0;
+                    buttonSound.play();
+
+                    feedNumber("plus");
+                })
+                //引き算//
+                minusbutton.addEventListener("click",function(){
+                    buttonSound.currentTime = 0;
+                    buttonSound.play();
+                    
+                    feedNumber("minus");
+                })
+                //掛け算//
+                multiplybutton.addEventListener("click",function(){
+                    buttonSound.currentTime = 0;
+                    buttonSound.play();
+                    
+                    feedNumber("multiply");
+                })
+                //割り算//
+                dividebutton.addEventListener("click", function(){
+                    buttonSound.currentTime = 0;
+                    buttonSound.play();
+                    
+                    feedNumber("divide");
+                })
+                //ご馳走様//
+                finishbutton.addEventListener("click", function(){
+                    buttonSound.play();
+                    let difference = Math.abs(current - target);
+                    if(difference === 0){
+                        showMessage("Goo DEN-TAKU!<br>満腹値"+target+"<br>現在値:"+current);
+                        score += 10000;
+                        justSound.currentTime = 0;
+                        justSound.play();
+                        showCharacterJust();
+                    }
+                    else if(difference <= 5){
+                        showMessage("Goo DEN!<br>満腹値"+target+"<br>現在値:"+current);
+                        score += 5000;
+                        goodSound.currentTime = 0;
+                        goodSound.play();
+                        showCharacterjoy();
+                    }
+                    else if(difference <= 10){
+                        showMessage("Goo!<br>満腹値"+target+"<br>現在値:"+current);
+                        score += 1000;
+                        normalSound.currentTime = 0;
+                        normalSound.play();
+                        showCharacterjoy();
+                    }
+
+                    if(max_turn > 15){
+                    max_turn--;
+                    }
+                    nextmachine = true;
+                })
+                //リトライ//
+                retrybutton.addEventListener("click",function(){
+                    titleBGM.play();
+                    buttonSound.play();
+                    retryGame();
+                })
+
+        
+        </script>
+    </body>
+</html>
